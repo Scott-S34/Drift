@@ -1,3 +1,31 @@
+//function to get the message after entering an email to the form
+function showMessage(message){
+  alert(message)
+  
+}
+
+//add event listener to the form
+document.getElementById("form").addEventListener("submit", function(event){
+  event.preventDefault(); //preventing default form submission behaviour (i.e. blank screen on another page)
+
+
+  //perform an AJAX request to submit the form
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", this.action); //looking at the request which is a post method and action is sending data to the google sheet
+  xhr.onreadystatechange =function(){
+    if(xhr.readyState === XMLHttpRequest.DONE){ //checking the state of the request is completed
+      if(xhr.status === 200){//checking a successful response
+        var response = xhr.responseText;
+        showMessage(response);
+        document.getElementById("form").reset(); //clearing the form fields after message appears
+      } else{ //if response was not successful
+        showMessage("Error: Something went Wrong.");
+      }
+    }
+  }
+  xhr.send(new FormData(this)); //sending the form data 
+});
+
 (function () {
   //===== Prealoder
 
@@ -94,4 +122,6 @@
 
   // WOW active
   new WOW().init();
+
+  
 })();
