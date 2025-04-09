@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Adamina&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="Style.css">
+<script src = "script.js"></script>
 
   <title>Drift Navigation bar</title>
 </head>
@@ -182,8 +183,8 @@
             </div>
             <div class="col-md-4">
                 <h5>NEWSLETTER</h5>
-                <form>
-                    <input type="email" class="form-control mb-2" placeholder="Enter Email Address">
+                <form id = "subscribeForm" onsubmit="secureForm()">
+                    <input id = "email" type="email" class="form-control mb-2" placeholder="Enter Email Address">
                     <button class="btn btn-outline-light">SUBSCRIBE</button>
                 </form>
             </div>

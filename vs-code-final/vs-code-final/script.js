@@ -25,11 +25,21 @@ bookTableButton.addEventListener("click", function() {
 });
 
 
-
-
 document.getElementById("bookTableButton").addEventListener("click", function() {
     window.location.href = "booktable.html";
 });
 document.getElementById("submitButton").addEventListener("click", function() {
     window.location.href = "thankyou.html";
 });
+
+//securing the subscribe button against XSS
+function secureForm(form){
+  var form = document.getElementById("subscribeForm");
+  var email = document.getElementById("email");
+  var encoding = String(email.value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  email.value = encoding;
+  //alert("email secured")
+  form.innerHTML= "Email secured: " + email.value;
+  form.submit();
+
+}
