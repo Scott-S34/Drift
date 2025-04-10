@@ -188,7 +188,7 @@ p.feat-text {
 
 /* Style for the activities heading section */
 .activities-heading {
-  background-image: url('Assets/white-fabric.jpg'); /* Path to your background image */
+  background-image:  linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('Assets/white-fabric.jpg'); /* Path to your background image */
   background-size: cover; /* Cover the space but maintain aspect ratio */
   background-position: center;
   height: 3in; /* Set the height to 3 inches */
@@ -199,10 +199,9 @@ p.feat-text {
 }
 
 /* Style for the Activities heading text */
-.activities-heading h3 {
+.activities-heading h1 {
   color: white; /* Adjust text color for contrast with the background */
   margin: 0; /* Remove default margin */
-  font-size: 2rem; /* Adjust font size as necessary */
 }
 
 
