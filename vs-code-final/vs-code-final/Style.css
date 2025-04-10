@@ -1,11 +1,12 @@
-
 body {
-    background-color: #ffffff;
-    background-image: url(Assets/pexels-tomfisk-4618221\ 1.png);
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
-   
+  background-color: #ffffff;
+  background-image: url(Assets/pexels-tomfisk-4618221\ 1.png);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  margin: 0; /* Ensure no body margin */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -313,10 +314,8 @@ h5 {
     display: block;
     line-height: 1.2;
 }
-body {
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    margin: 0; /* Ensure no body margin */
-}
+
+
 .text{
     color: #ffffff;
 }
