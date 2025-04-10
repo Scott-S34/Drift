@@ -5,7 +5,6 @@ body {
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
-     
    
 }
 
@@ -24,7 +23,7 @@ h1, h2, h3, h4, h5, h6 {
     font-style: normal;
   }
   
-    .nav-item {
+.nav-item {
         float: right;
         display: block;
         color: #ffffff; 
@@ -34,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
     }
    
 
-    .cardtext{
+.cardtext{
         color: #ffffff; 
         font-weight:700;
         font-size: 150%;
@@ -42,7 +41,8 @@ h1, h2, h3, h4, h5, h6 {
         
 
     }
-    .background-container {
+
+  .background-container {
       background: url('background.jpg') no-repeat center center/cover;
       height: 100vh; /* Full viewport height */
       display: flex;
@@ -508,7 +508,7 @@ body {
     padding: 5px 15px;
 }
 .footer-container {
-    background-color: #36A9CE;
+    background-color: #38AECC;
     color: white;
     text-align: center;
     padding: 20px ;
