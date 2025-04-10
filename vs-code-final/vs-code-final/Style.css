@@ -9,7 +9,6 @@
 
 body {
   background-color: var(--white-color);
-  background-image: url(Assets/pexels-tomfisk-4618221\ 1.png);
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
@@ -65,8 +64,8 @@ p.feat-text {
 
     }
 
-  .background-container {
-      background: url('background.jpg') no-repeat center center/cover;
+  .hero-img {
+      background: url(Assets/pexels-tomfisk-4618221\ 1.png) no-repeat center center/cover;
       height: 100vh; /* Full viewport height */
       display: flex;
       justify-content: center;
