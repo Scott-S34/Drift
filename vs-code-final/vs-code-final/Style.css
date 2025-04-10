@@ -186,6 +186,7 @@ p.feat-text {
 }
 
 
+
 /* Style for the ACTIVITIES heading section */
 .activities-heading {
   background-image:  linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('Assets/white-fabric.jpg'); /* Path to your background image */
@@ -396,6 +397,12 @@ h5 {
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+
+.login-form {
+  
+}
+
 
 .social-icons a {
     margin: 0 10px;
