@@ -40,6 +40,15 @@ body, p, a, .navbar-nav .nav-item, .cardtext, .text {
 p.feat-text {
   font-size: 2rem;
 }
+/* Navbar Logo */
+.navbar-brand img {
+  width: auto; /* Retains aspect ratio */
+  height: 50px; /* Adjust based on your design */
+  max-width: 100%; /* Ensures the logo doesn't exceed the available space */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 
 /* Adjust spacing between nav items */
@@ -83,13 +92,16 @@ p.feat-text {
       max-width: 500px;
   }
   
-  /* Top Image */
+  /* logo in nav bar  */
   .top-image {
-      width: 200px;
-      height: auto;
-      margin-bottom: 15px;
-  }
-  
+    width: auto; /* Allows the logo to retain its original aspect ratio */
+    height: 50px; /* Adjust the height based on your navbar's desired size */
+    max-width: 200px; /* Optional: Limits the maximum width of the logo */
+    margin-bottom: 0; /* Removes bottom margin if unnecessary */
+    display: block; /* Makes sure the image is treated as a block element */
+    margin-left: auto;
+    margin-right: auto; /* Centers the logo horizontally */
+}
   /* Middle Text */
   .middle-text {
       font-size: 1.5rem;
