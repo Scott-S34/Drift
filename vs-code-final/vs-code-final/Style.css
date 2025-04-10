@@ -24,15 +24,19 @@ h1, h2, h3, h4, h5, h6 {
     font-style: normal;
   }
   
+/* Adjust spacing between nav items */
+.navbar-nav .nav-item {
+  margin-right: 80px; /* Adjust this value as needed */
+}
+
+/* Style for nav items */
 .nav-item {
-        float: right;
-        display: block;
-        color: #ffffff; 
-       /* text-align: center;*/
-        padding: 12px 20px;
-        text-decoration: none;
-    }
-   
+  display: block;
+  color: #ffffff; 
+  padding: 12px 20px;
+  text-decoration: none;
+}
+
 
 .cardtext{
         color: #ffffff; 
