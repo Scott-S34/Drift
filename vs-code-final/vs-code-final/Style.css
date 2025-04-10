@@ -65,7 +65,7 @@ p.feat-text {
     }
 
   .hero-img {
-      background: url(Assets/pexels-tomfisk-4618221\ 1.png) no-repeat center center/cover;
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(Assets/pexels-tomfisk-4618221\ 1.png) no-repeat center center/cover;
       height: 100vh; /* Full viewport height */
       display: flex;
       justify-content: center;
