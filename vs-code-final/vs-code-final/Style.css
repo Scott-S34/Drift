@@ -1,5 +1,14 @@
+:root {
+  --primary-color: #38AECC;
+  --secondary-color: #0540b7;
+  --white-color: #ffffff;
+  --black-color: #333;
+}
+
+
+
 body {
-  background-color: #ffffff;
+  background-color: var(--white-color);
   background-image: url(Assets/pexels-tomfisk-4618221\ 1.png);
   background-attachment: fixed;
   background-size: cover;
@@ -41,6 +50,18 @@ body, p, a, .navbar-nav .nav-item, .cardtext, .text {
   padding: 12px 20px;
   text-decoration: none;
 }
+
+
+
+/* Margin and Padding */
+
+
+
+
+
+
+
+
 
 
 .cardtext{
