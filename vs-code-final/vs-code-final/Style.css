@@ -186,7 +186,7 @@ p.feat-text {
 }
 
 
-/* Style for the activities heading section */
+/* Style for the ACTIVITIES heading section */
 .activities-heading {
   background-image:  linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('Assets/white-fabric.jpg'); /* Path to your background image */
   background-size: cover; /* Cover the space but maintain aspect ratio */
@@ -200,6 +200,27 @@ p.feat-text {
 
 /* Style for the Activities heading text */
 .activities-heading h1 {
+  color: white; /* Adjust text color for contrast with the background */
+  margin: 0; /* Remove default margin */
+}
+
+
+
+
+/* Style for the CONTACT US heading section */
+.contact-heading {
+  background-image:  linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('Assets/turtle2.jpg'); /* Path to your background image */
+  background-size: cover; /* Cover the space but maintain aspect ratio */
+  background-position: center;
+  height: 3in; /* Set the height to 3 inches */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center the content vertically */
+  text-align: center; /* Center the text horizontally */
+}
+
+/* Style for the Activities heading text */
+.contact-heading h1 {
   color: white; /* Adjust text color for contrast with the background */
   margin: 0; /* Remove default margin */
 }
