@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import io
 from PIL import Image
 
+print("render-server.py file on server.")  # Log message to terminal
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 RESULT_FOLDER = 'Results'
@@ -25,7 +26,7 @@ os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+print("Waiting for an image upload..")  # Log message to terminal
 @app.route('/analyze', methods=['POST'])
 def analyze_image():
     print("Image upload received!")  # Log message to terminal
@@ -82,4 +83,4 @@ def serve_result(filename):
     return send_file(os.path.join(app.config['RESULT_FOLDER'], filename), mimetype='image/png')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=10000)
