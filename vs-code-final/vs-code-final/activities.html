@@ -66,6 +66,55 @@
   </div>
 </section>
 
+<script>
+  async function analyzeImage(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const fileInput = document.getElementById('upload');
+    const resultElement = document.getElementById('scanner-result');
+    const vizElement = document.getElementById('scanner-visualization');
+    
+    if (!fileInput.files[0]) {
+      resultElement.innerHTML = '<div class="alert alert-warning">Please upload an image.</div>';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+
+    try {
+      resultElement.innerHTML = '<div class="alert alert-info">Processing...</div>';
+      const response = await fetch('https://drift-gczv.onrender.com', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      
+      if (data.error) {
+        resultElement.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+      } else {
+        // Display material counts
+        const counts = Object.entries(data.predictions)
+          .map(([material, count]) => `${material}: ${count}`)
+          .join(', ');
+        resultElement.innerHTML = `
+          <div class="alert alert-success">
+            <strong>Material Analysis:</strong> ${counts}
+          </div>
+        `;
+        
+        // Display visualization
+        vizElement.innerHTML = `
+          <h6>Material Visualization</h6>
+          <img src="https://drift-gczv.onrender.com${data.visualization}" alt="Material Visualization" class="img-fluid rounded">
+        `;
+      }
+    } catch (error) {
+      resultElement.innerHTML = '<div class="alert alert-danger">Error: Could not connect to server.</div>';
+    }
+  }
+</script>
+
 
 
 <!-- Drift's Clothing Scanner Section -->
@@ -77,13 +126,13 @@
         <p class="scanner-text">
           If you’re shopping online or in-store, simply scan your clothing of choice, and we’ll provide you with a curated selection of more sustainable and eco-friendly alternatives. Discover options made from organic fabrics, recycled materials, or produced by ethical brands committed to fair labour practices. Our goal is to make responsible fashion choices easier and more accessible. By choosing eco-friendly alternatives, you’re not only reducing your carbon footprint but also supporting companies that care about people and the planet. Shop smarter, feel good about your purchase, and join us in making a positive impact on the future of fashion!
         </p>
-        <form id = 'scanner' action="../../image analyser.py" onsubmit = "secureFileUploading()">
-          <input id = "upload" type = "file" name = "file">
-          <br>
+        <form id="scanner" onsubmit="analyzeImage(event)">
+          <input id="upload" type="file" name="file" accept="image/*" class="form-control mb-3">
           <br>
           <input type="submit" class="btn btn-primary scanner-button" value="Try now!">
-        <!-- <a href="#" class="btn btn-primary scanner-button">Try it now!</a> -->
         </form>
+        <div id="scanner-result" class="mt-3"></div>
+        <div id="scanner-visualization" class="mt-3"></div>
       </div>
   
       <!-- Image Content -->
@@ -167,18 +216,6 @@
       </div>
     </div>
   </div>
-  
-
-
-
-
-
-
-
-
-
-
-
 
 <!--footer-->
 
