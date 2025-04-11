@@ -27,6 +27,11 @@ os.makedirs(RESULT_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 print("Waiting for an image upload..")  # Log message to terminal
+
+@app.route('/')
+def health_check():
+    return jsonify({'status': 'ok'})
+    
 @app.route('/analyze', methods=['POST'])
 def analyze_image():
     print("Image upload received!")  # Log message to terminal
