@@ -1,92 +1,80 @@
-from flask import Flask, request, jsonify, send_file
+
+# A very simple Flask Hello World app for you to get started with...
+
+from flask import Flask, render_template, request, jsonify, send_file
 import os
 import cv2
 import numpy as np
 from werkzeug.utils import secure_filename
-from imageAnalyser import svm_model, scaler, selector, generate_material_predictions, visualise_material_regions
-from collections import Counter
-import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend for matplotlib
-import matplotlib.pyplot as plt
 import io
 from PIL import Image
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-RESULT_FOLDER = 'Results'
+UPLOAD_FOLDER = '/home/fokusmok/cloth-scanner/uploads'
+# RESULT_FOLDER = '/home/fokusmok/cloth-scanner/Results'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['RESULT_FOLDER'] = RESULT_FOLDER
+# app.config['RESULT_FOLDER'] = RESULT_FOLDER
 
 # Ensure folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(RESULT_FOLDER, exist_ok=True)
+# os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-print("Waiting for an image upload..")  # Log message to terminal
 
 @app.route('/')
-def health_check():
-    print("render-server.py file on server.")  # Log message to terminal
-    return jsonify({'status': 'ok'})
+def hello_world():
+    return render_template('activities.html')
 
-@app.route('/analyze', methods=['POST'])
+@app.route('/analyze', methods = ['GET', 'POST'])
 def analyze_image():
-    print("Image upload received!")  # Log message to terminal
-    # Check if an image was uploaded
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image uploaded'}), 400
-    
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Invalid file type. Use PNG, JPG, or JPEG'}), 400
-    
-    # Save the image
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
-    
-    try:
-        # Generate material predictions
-        material_predictions = generate_material_predictions(filepath)
-        
-        # Count predictions for summary
-        materials = [pred[2][0] for pred in material_predictions]  # Extract material names
-        material_counts = dict(Counter(materials))
-        
-        # Generate visualization
-        result_filename = f'result_{filename}'
-        result_filepath = os.path.join(app.config['RESULT_FOLDER'], result_filename)
-        
-        # Temporarily save visualization
-        visualise_material_regions(filepath, material_predictions)
-        plt.savefig(result_filepath, format='png', bbox_inches='tight')
-        plt.close()
-        
-        # Prepare response
-        response = {
-            'predictions': material_counts,  # e.g., {"Cotton": 50, "Leather": 20}
-            'visualization': f'/results/{result_filename}'  # URL to fetch the image
-        }
-        
-        return jsonify(response)
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-    finally:
-        # Clean up uploaded file
-        if os.path.exists(filepath):
-            os.remove(filepath)
+    if request.method == 'POST':
+        # Check if a file was uploaded
+        if 'image' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
 
-@app.route('/results/<filename>')
-def serve_result(filename):
-    return send_file(os.path.join(app.config['RESULT_FOLDER'], filename), mimetype='image/png')
+        file = request.files['image']
 
-PORT = int(os.environ.get('PORT', 10000))
+        # Check if the file has a filename
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+
+        # Check if the file extension is allowed
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            try:
+                # Save the uploaded file
+                file.save(filepath)
+
+                # Path for imageAnalyser.py
+                analyser_path = '/home/fokusmok/imageAnalyser.py'
+                try:
+                    # Run the script with the image filepath as an argument
+                    result = subprocess.run(
+                        ['python3', script_path, filepath],
+                        capture_output=True, text=True, check=True
+                    )
+                except subprocess.CalledProcessError as e:
+                    return jsonify({
+                        'error': f'Script execution failed: {e.stderr}'
+                    }), 500
+                except FileNotFoundError:
+                    return jsonify({
+                        'error': f'Script not found at {script_path}'
+                    }), 500
+
+                return jsonify({'message': f'File {filename} uploaded successfully', 'filename': filename})
+            except Exception as e:
+                return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
+
+        return jsonify({'error': 'Invalid file type'}), 400
+
+    # Handle GET request
+    return render_template('activities.html')
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=PORT)
+    app.run(debug=True)
