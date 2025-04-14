@@ -1,80 +1,118 @@
-
-# A very simple Flask Hello World app for you to get started with...
-
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import os
-import cv2
-import numpy as np
 from werkzeug.utils import secure_filename
+from imageAnalyser import generate_material_predictions, visualise_material_regions
 import io
 from PIL import Image
+import logging
+import time
+import glob
 
 app = Flask(__name__)
-UPLOAD_FOLDER = '/home/fokusmok/cloth-scanner/uploads'
-# RESULT_FOLDER = '/home/fokusmok/cloth-scanner/Results'
+UPLOAD_FOLDER = 'Uploads'
+RESULT_FOLDER = 'Results'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['RESULT_FOLDER'] = RESULT_FOLDER
+app.config['RESULT_FOLDER'] = RESULT_FOLDER
 
 # Ensure folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# os.makedirs(RESULT_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+# Configure logging
+logging.basicConfig(filename='/home/fokusmok/flask_app.log', level=logging.DEBUG)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    if not filename or '.' not in filename:
+        app.logger.error(f"Invalid filename: '{filename}'")
+        return False
+    extension = filename.rsplit('.', 1)[-1].lower()
+    is_allowed = extension in ALLOWED_EXTENSIONS
+    app.logger.debug(f"Filename: '{filename}', Extension: '{extension}', Allowed: {is_allowed}")
+    return is_allowed
 
 @app.route('/')
-def hello_world():
-    return render_template('activities.html')
+def health_check():
+    app.logger.info("Health check accessed")
+    return jsonify({'status': 'ok'})
 
-@app.route('/analyze', methods = ['GET', 'POST'])
+@app.route('/analyze', methods=['POST'])
 def analyze_image():
-    if request.method == 'POST':
-        # Check if a file was uploaded
-        if 'image' not in request.files:
-            return jsonify({'error': 'No file uploaded'}), 400
+    app.logger.info("Analyze endpoint called")
 
-        file = request.files['image']
+    if 'image' not in request.files:
+        app.logger.error("No image uploaded")
+        return jsonify({'error': 'No image uploaded'}), 400
 
-        # Check if the file has a filename
-        if file.filename == '':
-            return jsonify({'error': 'No file selected'}), 400
+    file = request.files['image']
+    app.logger.debug(f"Received file: '{file.filename}'")
 
-        # Check if the file extension is allowed
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if file.filename == '':
+        app.logger.error("No file selected")
+        return jsonify({'error': 'No file selected'}), 400
 
-            try:
-                # Save the uploaded file
-                file.save(filepath)
+    if not allowed_file(file.filename):
+        app.logger.error(f"Invalid file type: '{file.filename}'")
+        return jsonify({'error': 'Invalid file type. Use PNG, JPG, or JPEG'}), 400
 
-                # Path for imageAnalyser.py
-                analyser_path = '/home/fokusmok/imageAnalyser.py'
-                try:
-                    # Run the script with the image filepath as an argument
-                    result = subprocess.run(
-                        ['python3', script_path, filepath],
-                        capture_output=True, text=True, check=True
-                    )
-                except subprocess.CalledProcessError as e:
-                    return jsonify({
-                        'error': f'Script execution failed: {e.stderr}'
-                    }), 500
-                except FileNotFoundError:
-                    return jsonify({
-                        'error': f'Script not found at {script_path}'
-                    }), 500
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    app.logger.info(f"Saving file to {filepath}")
+    file.save(filepath)
 
-                return jsonify({'message': f'File {filename} uploaded successfully', 'filename': filename})
-            except Exception as e:
-                return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
+    try:
+        # Analyze image
+        app.logger.info("Generating material predictions")
+        material_percentages = generate_material_predictions(filepath)
 
-        return jsonify({'error': 'Invalid file type'}), 400
+        # Generate unique filename for visualization
+        timestamp = int(time.time())
+        result_filename = f"result_{timestamp}_{filename}.png"
+        result_filepath = os.path.join(app.config['RESULT_FOLDER'], result_filename)
 
-    # Handle GET request
-    return render_template('activities.html')
+        # Save visualization
+        app.logger.info(f"Saving visualization to {result_filepath}")
+        visualise_material_regions(filepath, material_percentages, result_filepath)
+
+        # Clean up old visualization files (keep last 10)
+        result_files = sorted(glob.glob(os.path.join(app.config['RESULT_FOLDER'], '*.png')), key=os.path.getmtime)
+        while len(result_files) > 10:
+            old_file = result_files.pop(0)
+            app.logger.info(f"Removing old visualization: {old_file}")
+            os.remove(old_file)
+
+        # Prepare response
+        response = {
+            'report': {
+                'Cotton': f"{material_percentages['Cotton']:.2f}%",
+                'Leather': f"{material_percentages['Leather']:.2f}%"
+            },
+            'message': "Image analyzed successfully. See material breakdown above.",
+            'visualization': f"/results/{result_filename}"
+        }
+
+        app.logger.info("Returning successful response")
+        return jsonify(response)
+
+    except Exception as e:
+        app.logger.error(f"Analysis failed: {str(e)}")
+        return jsonify({'error': f"Analysis failed: {str(e)}"}), 500
+
+    finally:
+        # Clean up uploaded file
+        if os.path.exists(filepath):
+            app.logger.info(f"Cleaning up {filepath}")
+            os.remove(filepath)
+
+@app.route('/results/<filename>')
+def serve_result(filename):
+    app.logger.info(f"Serving result: {filename}")
+    return send_file(os.path.join(app.config['RESULT_FOLDER'], filename), mimetype='image/png')
+
+@app.route('/fokusmok/activities.html')
+def serve_static(filename):
+    return send_from_directory('/home/fokusmok', filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
